@@ -1,0 +1,12 @@
+{
+  "temp": "15.0",
+  "humidity": "50",
+  "pressure": "1013.2",
+  "wind_speed": "10.0",
+  "wind_dir": "180",
+  "wind_gust": "15.0",
+  "rain_1h": "0.0",
+  "rain_24h": "0.0",
+  "rain_midnight": "0.0",
+  "luminosity": "0"
+}

@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iris Meteo Beacon Dashboard</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <header class="glass-panel">
+            <div class="logo">
+                <div style="display: flex; align-items: baseline; gap: 10px;">
+                    <h1>IRIS <span>METEO</span></h1>
+                    <div class="update-status-inline" id="update-container">
+                        <span id="version-tag">v1.0.0</span>
+                        <span id="update-info" style="font-size: 0.75rem; opacity: 0.8; margin-left: 5px;">up to date</span>
+                        <button id="update-btn" class="btn-update-mini">Check</button>
+                    </div>
+                </div>
+                <p class="subtitle">Radio Broadcast Beacon</p>
+            </div>
+            <div class="status-bar">
+                <div class="api-stats">
+                    <span class="icon">📈</span>
+                    <span>API Requests: <strong id="api-count">0</strong> / 10000 Daily</span>
+                </div>
+                <button id="trigger-btn" class="btn-primary">
+                    <span class="pulse-icon"></span> Trigger Broadcast
+                </button>
+            </div>
+        </header>
+
+        <main>
+            <div class="grid-layout">
+                <!-- Left Column: Settings -->
+                <div class="settings-column glass-panel">
+                    <div class="sidebar-logo">
+                        <img src="/static/logo.png" alt="Iris Meteo Logo">
+                    </div>
+                    <h2>Configuration</h2>
+                    <form id="settings-form">
+
+                        <!-- General Settings -->
+                        <section class="config-group">
+                            <h3>General</h3>
+                            <div class="toggle-container">
+                                <label for="enable_beacon">Enable Beacon</label>
+                                <label class="switch">
+                                    <input type="checkbox" id="enable_beacon" name="enable_beacon">
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+                            <div class="toggle-container">
+                                <label for="autostart">Autostart on Boot (OS)</label>
+                                <label class="switch">
+                                    <input type="checkbox" id="autostart" name="autostart">
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+                            <div class="input-group">
+                                <label for="schedule_interval">Interval (Minutes)</label>
+                                <select id="schedule_interval" name="schedule_interval">
+                                    <option value="5">Every 5 Min</option>
+                                    <option value="10">Every 10 Min</option>
+                                    <option value="15">Every 15 Min</option>
+                                    <option value="30">Every 30 Min</option>
+                                    <option value="60">Every Hour</option>
+                                </select>
+                            </div>
+                        </section>
+
+                        <!-- Data Source & API -->
+                        <section class="config-group">
+                            <h3>Data Source</h3>
+                            <div class="input-group">
+                                <label for="primary_source">Primary Source<br><span
+                                        style="font-size: 0.75rem; opacity: 0.8;">(Personal Weather
+                                        Station)</span></label>
+                                <select id="primary_source" name="primary_source" onchange="updateDynamicFrames()">
+                                    <option value="off">Deactivate</option>
+                                    <option value="cumulusmx">Cumulus MX</option>
+                                    <option value="weatherlink">Weather Link (Davis)</option>
+                                    <option value="meteobridge">Meteo Bridge</option>
+                                    <option value="weatherdisplay">Weather Display</option>
+                                    <option value="weewx">WeeWX</option>
+                                    <option value="aprs">APRS</option>
+                                </select>
+                            </div>
+                            <div class="input-group" id="pws_path_group">
+                                <label for="pws_path">URL / Path</label>
+                                <input type="text" id="pws_path" name="pws_path"
+                                    placeholder="/home/pi/pws.json or http://...">
+                            </div>
+
+                            <div class="input-group mt-3">
+                                <label for="secondary_source">Secondary Source<br><span
+                                        style="font-size: 0.75rem; opacity: 0.8;">(open-meteo.com)</span></label>
+                                <select id="secondary_source" name="secondary_source" onchange="updateDynamicFrames()">
+                                    <option value="off">Deactivate</option>
+                                    <option value="open_meteo">Activate</option>
+                                </select>
+                            </div>
+                            <div class="input-group" id="weather_model_group">
+                                <label for="weather_model">Weather Forecasting Model</label>
+                                <select id="weather_model" name="weather_model">
+                                    <option value="auto">Auto (Default)</option>
+                                    <option value="ecmwf_ifs04">ECMWF</option>
+                                    <option value="gfs_seamless">GFS (NOAA)</option>
+                                    <option value="icon_seamless">ICON (DWD)</option>
+                                    <option value="meteofrance_seamless">MeteoFrance / HARMONIE</option>
+                                </select>
+                            </div>
+
+                            <div class="input-group mt-3">
+                                <label for="env_source">Environment Source<br><span
+                                        style="font-size: 0.75rem; opacity: 0.8;">(Custom Data)</span></label>
+                                <select id="env_source" name="env_source" onchange="updateDynamicFrames()">
+                                    <option value="off">Deactivate</option>
+                                    <option value="on">Activate</option>
+                                </select>
+                            </div>
+                            <div class="input-group" id="env_path_group">
+                                <label for="env_path">Environment Path / URL</label>
+                                <input type="text" id="env_path" name="env_path" placeholder="Path to env data">
+                            </div>
+
+                            <div class="input-group mt-3">
+                                <label for="sw_source">Space Weather Data<br><span
+                                        style="font-size: 0.75rem; opacity: 0.8;">(NOAA Space Weather Prediction
+                                        Center)</span></label>
+                                <select id="sw_source" name="sw_source" onchange="updateDynamicFrames()">
+                                    <option value="off">Deactivate</option>
+                                    <option value="on">Activate</option>
+                                </select>
+                            </div>
+
+                            <div class="input-group mt-3">
+                                <label for="forecast_target">Forecast Day<br><span
+                                        style="font-size: 0.75rem; opacity: 0.8;">(open-meteo.com)</span></label>
+                                <select id="forecast_target" name="forecast_target" onchange="updateDynamicFrames()">
+                                    <option value="today">Today</option>
+                                    <option value="tomorrow">Tomorrow</option>
+                                    <option value="OFF">Deactivate</option>
+                                </select>
+                            </div>
+                            <div class="input-group" id="forecast_model_group">
+                                <label for="forecast_model">Weather Forecasting Model</label>
+                                <select id="forecast_model" name="forecast_model">
+                                    <option value="auto">Auto (Default)</option>
+                                    <option value="ecmwf_ifs025">ECMWF (0.25°)</option>
+                                    <option value="gfs_seamless">GFS (NOAA)</option>
+                                    <option value="icon_seamless">ICON (DWD)</option>
+                                    <option value="meteofrance_seamless">MeteoFrance / HARMONIE</option>
+                                </select>
+                            </div>
+
+                            <div class="input-group mt-3">
+                                <label for="units">Measurement Unit</label>
+                                <select id="units" name="units">
+                                    <option value="metric">European (Metric - °C, km/h, mm)</option>
+                                    <option value="imperial">American (Imperial - °F, mph, inch)</option>
+                                </select>
+                            </div>
+                        </section>
+
+                        <!-- Hardware & Audio -->
+                        <section class="config-group">
+                            <h3>Hardware & Audio</h3>
+                            <div class="input-group">
+                                <label for="ptt_port">PTT COM Port</label>
+                                <select id="ptt_port" name="ptt_port">
+                                    <option value="None">None (Disabled)</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label for="ptt_pin">PTT Trigger Pin</label>
+                                <select id="ptt_pin" name="ptt_pin">
+                                    <option value="RTS High">RTS High</option>
+                                    <option value="RTS Low">RTS Low</option>
+                                    <option value="DTR High">DTR High</option>
+                                    <option value="DTR Low">DTR Low</option>
+                                </select>
+                            </div>
+
+                            <div class="input-group">
+                                <label for="tts_voice">TTS Voice</label>
+                                <select id="tts_voice" name="tts_voice">
+                                    <option value="en-US-AriaNeural">English (US) - Aria</option>
+                                    <option value="en-GB-SoniaNeural">English (UK) - Sonia</option>
+                                    <option value="el-GR-AthinaNeural">Greek - Athina</option>
+                                    <option value="el-GR-NestorasNeural">Greek - Nestoras</option>
+                                </select>
+                            </div>
+
+                            <div class="input-group">
+                                <label for="audio_device">Audio Output Device</label>
+                                <select id="audio_device" name="audio_device">
+                                    <option value="Default">System Default</option>
+                                </select>
+                            </div>
+
+                            <div class="slider-group">
+                                <label for="tts_rate">Voice Rate: <span id="rate-val">0%</span></label>
+                                <input type="range" id="tts_rate" name="tts_rate" min="-50" max="50" value="0">
+                            </div>
+                            <div class="slider-group">
+                                <label for="audio_volume">Master Volume: <span id="vol-val">100%</span></label>
+                                <input type="range" id="audio_volume" name="audio_volume" min="0" max="1" step="0.1"
+                                    value="1">
+                            </div>
+                        </section>
+
+
+
+                        <button type="submit" class="btn-save">Save Configuration</button>
+                    </form>
+                </div>
+
+                <!-- Middle Column: Location & Parameters -->
+                <div class="middle-column">
+                    <div class="map-container glass-panel">
+                        <h2>Location</h2>
+                        <p
+                            style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px; line-height: 1.4; text-align: center;">
+                            Please select the location for which the Secondary Source (Open-Meteo.com) will announce the
+                            weather conditions.
+                        </p>
+                        <div id="map"></div>
+                        <div class="coord-inputs"
+                            style="position: relative; justify-content: center; align-items: flex-end; gap: 15px;">
+                            <button id="locate-btn" type="button" class="btn-primary"
+                                style="position: absolute; left: 0; padding: 10px 15px; font-size: 0.85rem; white-space: nowrap; height: 42px;">📍
+                                Locate Me</button>
+                            <div class="input-group" style="margin-bottom: 0;">
+                                <label style="text-align: center;">Latitude</label>
+                                <input type="text" id="latitude" readonly style="width: 140px; text-align: center;">
+                            </div>
+                            <div class="input-group" style="margin-bottom: 0;">
+                                <label style="text-align: center;">Longitude</label>
+                                <input type="text" id="longitude" readonly style="width: 140px; text-align: center;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="script-container glass-panel mt-4">
+                        <h2>Broadcast Message Script</h2>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">
+                            You can enter your callsigns here.<br>
+                            Example: <strong>Sierra Victor One Romeo Victor Papa. The prevailing weather conditions in
+                                the Athens area are.</strong>
+                        </p>
+                        <div class="input-group">
+                            <label for="prologue">Prologue (Intro Text)</label>
+                            <textarea id="prologue" name="prologue" rows="2"
+                                style="width:100%; background:rgba(15,23,42,0.6); color:#fff; padding:10px; border-radius:6px; border:1px solid var(--panel-border); font-family:inherit;"></textarea>
+                        </div>
+                        <div class="input-group mt-3">
+                            <label for="epilogue">Epilogue (Outro Text)</label>
+                            <textarea id="epilogue" name="epilogue" rows="2"
+                                style="width:100%; background:rgba(15,23,42,0.6); color:#fff; padding:10px; border-radius:6px; border:1px solid var(--panel-border); font-family:inherit;"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="params-container glass-panel mt-4" id="frame_primary">
+                        <h2 id="frame_primary_title">Broadcast Parameters From Primary Source</h2>
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px;">Set to
+                            <strong>0</strong> to deactivate. Use numbers (1, 2, 3...) to define the broadcast sequence
+                            order.</p>
+                        <div class="sequence-grid">
+                            <label class="cb-label"><input type="number" min="0" value="0" class="seq-input"
+                                    id="seq_primary_weather_code"> Conditions</label>
+                            <label class="cb-label"><input type="number" min="0" value="0" class="seq-input"
+                                    id="seq_primary_temp"> Temperature</label>
+                            <label class="cb-label"><input type="number" min="0" value="0" class="seq-input"
+                                    id="seq_primary_apparent_temp"> Feels Like</label>
+                            <label class="cb-label"><input type="number" min="0" value="0" class="seq-input"
+                                    id="seq_primary_humidity"> Humidity</label>
+                            <label class="cb-label"><input type="number" min="0" value="0" class="seq-input"
+                                    id="seq_primary_precipitation"> Precipitation</label>
+                            <label class="cb-label"><input type="number" min="0" value="0" class="seq-input"
+                                    id="seq_primary_wind_speed"> Wind Speed</label>
+                            <label class="cb-label"><input type="number" min="0" value="0" class="seq-input"
+                                    id="seq_primary_wind_dir"> Wind Direction</label>
+                            <label class="cb-label"><input type="number" min="0" value="0" class="seq-input"
+                                    id="seq_primary_wind_gusts"> Wind Gusts</label>
+                            <label class="cb-label"><input type="number" min="0" value="0" class="seq-input"
+                                    id="seq_primary_cloud_cover"> Cloud Cover</label>
+                            <label class="cb-label" style="border: 1px solid var(--accent);"><input type="number"
+                                    min="0" value="0" class="seq-input" id="seq_primary_air_quality"> Air Quality
+                                (AQI)</label>
+                        </div>
+                    </div>
+
+                    <div class="params-container glass-panel mt-4" id="frame_secondary">
+                        <h2>Broadcast Parameters From Open Meteo</h2>
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px;">Set to
+                            <strong>0</strong> to deactivate. Use numbers (1, 2, 3...) to define the broadcast sequence
+                            order.</p>
+                        <div class="sequence-grid">
+                            <label class="cb-label"><input type="number" min="0" value="0" class="seq-input"
+                                    id="seq_secondary_weather_code"> Conditions</label>
+                            <label class="cb-label"><input type="number" min="0" value="0" class="seq-input"
+                                    id="seq_secondary_temp"> Temperature</label>
+                            <label class="cb-label"><input type="number" min="0" value="0" class="seq-input"
+                                    id="seq_secondary_apparent_temp"> Feels Like</label>
+                            <label class="cb-label"><input type="number" min="0" value="0" class="seq-input"
+                                    id="seq_secondary_humidity"> Humidity</label>
+                            <label class="cb-label"><input type="number" min="0" value="0" class="seq-input"
+                                    id="seq_secondary_precipitation"> Precipitation</label>
+                            <label class="cb-label"><input type="number" min="0" value="0" class="seq-input"
+                                    id="seq_secondary_wind_speed"> Wind Speed</label>
+                            <label class="cb-label"><input type="number" min="0" value="0" class="seq-input"
+                                    id="seq_secondary_wind_dir"> Wind Direction</label>
+                            <label class="cb-label"><input type="number" min="0" value="0" class="seq-input"
+                                    id="seq_secondary_wind_gusts"> Wind Gusts</label>
+                            <label class="cb-label"><input type="number" min="0" value="0" class="seq-input"
+                                    id="seq_secondary_cloud_cover"> Cloud Cover</label>
+                            <label class="cb-label" style="border: 1px solid var(--accent);"><input type="number"
+                                    min="0" value="0" class="seq-input" id="seq_secondary_air_quality"> Air Quality
+                                (AQI)</label>
+                        </div>
+                    </div>
+
+
+
+                    <div class="params-container glass-panel mt-4" id="frame_env">
+                        <h2>Broadcast Parameters From Environment</h2>
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px;">Set to
+                            <strong>0</strong> to deactivate. Use numbers (1, 2, 3...) to define the broadcast sequence
+                            order.</p>
+                        <div class="sequence-grid">
+                            <label class="cb-label"><input type="number" min="0" value="0" class="seq-input"
+                                    id="seq_env_temp"> Env Temperature</label>
+                            <label class="cb-label"><input type="number" min="0" value="0" class="seq-input"
+                                    id="seq_env_humidity"> Env Humidity</label>
+                            <label class="cb-label"><input type="number" min="0" value="0" class="seq-input"
+                                    id="seq_env_pressure"> Env Pressure</label>
+                        </div>
+                    </div>
+
+                    <div class="params-container glass-panel mt-4" id="frame_sw">
+                        <h2>Broadcast Parameters From Space Weather Data</h2>
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px;">Set to
+                            <strong>0</strong> to deactivate. Use numbers (1, 2, 3...) to define the broadcast sequence
+                            order.</p>
+                        <div class="sequence-grid">
+                            <label class="cb-label" style="border: 1px solid #fbbf24;"><input type="number" min="0"
+                                    value="0" class="seq-input" id="seq_sw_noaa_g"> G-Scale (Geomagnetic)</label>
+                            <label class="cb-label" style="border: 1px solid #fbbf24;"><input type="number" min="0"
+                                    value="0" class="seq-input" id="seq_sw_noaa_s"> S-Scale (Radiation)</label>
+                            <label class="cb-label" style="border: 1px solid #fbbf24;"><input type="number" min="0"
+                                    value="0" class="seq-input" id="seq_sw_noaa_r"> R-Scale (Radio Blackout)</label>
+                        </div>
+                    </div>
+
+                    <div class="params-container glass-panel mt-4" id="frame_forecast">
+                        <div class="flex justify-between items-center mb-2">
+                            <h2 class="mb-0">Broadcast Parameters Forecast Day From Open Meteo</h2>
+                            <span class="badge" style="background: var(--accent); color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem;">2nd Period Announcement</span>
+                        </div>
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px;">
+                            Set to <strong>0</strong> to deactivate. Use numbers (1, 2, 3...) to define the internal sequence order for this section. 
+                            <br><em>Note: This section is always broadcast during the <strong>second announcement period</strong> and its sequence is independent of other data sources.</em>
+                        </p>
+                        <div class="input-group">
+                            <label for="forecast_prologue">Prologue (Intro Text)</label>
+                            <textarea id="forecast_prologue" name="forecast_prologue" rows="2"
+                                style="width:100%; background:rgba(15,23,42,0.6); color:#fff; padding:10px; border-radius:6px; border:1px solid var(--panel-border); font-family:inherit;"></textarea>
+                        </div>
+                        <div class="sequence-grid mt-3">
+                            <label class="cb-label"><input type="number" min="0" value="0" class="seq-input"
+                                    id="seq_forecast_weather_code"> Conditions</label>
+                            <label class="cb-label"><input type="number" min="0" value="0" class="seq-input"
+                                    id="seq_forecast_temp"> Temperature (Max/Min)</label>
+                            <label class="cb-label"><input type="number" min="0" value="0" class="seq-input"
+                                    id="seq_forecast_apparent_temp"> Feels Like (Max/Min)</label>
+                            <label class="cb-label"><input type="number" min="0" value="0" class="seq-input"
+                                    id="seq_forecast_precipitation"> Precip. Probability</label>
+                            <label class="cb-label"><input type="number" min="0" value="0" class="seq-input"
+                                    id="seq_forecast_precipitation_sum"> Total Precipitation</label>
+                            <label class="cb-label"><input type="number" min="0" value="0" class="seq-input"
+                                    id="seq_forecast_wind_speed"> Wind Speed (Max)</label>
+                            <label class="cb-label"><input type="number" min="0" value="0" class="seq-input"
+                                    id="seq_forecast_wind_dir"> Wind Direction</label>
+                            <label class="cb-label"><input type="number" min="0" value="0" class="seq-input"
+                                    id="seq_forecast_uv_index"> UV Index</label>
+                            <label class="cb-label"><input type="number" min="0" value="0" class="seq-input"
+                                    id="seq_forecast_sunrise"> Sunrise Time</label>
+                            <label class="cb-label"><input type="number" min="0" value="0" class="seq-input"
+                                    id="seq_forecast_sunset"> Sunset Time</label>
+                        </div>
+                        <div class="input-group mt-3">
+                            <label for="forecast_epilogue">Epilogue (Outro Text)</label>
+                            <textarea id="forecast_epilogue" name="forecast_epilogue" rows="2"
+                                style="width:100%; background:rgba(15,23,42,0.6); color:#fff; padding:10px; border-radius:6px; border:1px solid var(--panel-border); font-family:inherit;"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Terminal Logs -->
+                <div class="terminal-column glass-panel">
+                    <h2>Live Terminal</h2>
+                    <div class="terminal-window" id="terminal-window">
+                        <!-- Logs injected here -->
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="glass-panel footer-section">
+            <div class="footer-content">
+                <div class="footer-credits">
+                    <h3>Iris Meteo Beacon</h3>
+                    <p>Created by <strong>Alexandros - Ermis Tsourapas (SV1RVP)</strong>.</p>
+                    <p>Licensed under the <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank">GNU AGPL v3</a>.<br>Developed in the framework of amateur radio experimentation and the "Ham Spirit".</p>
+                    <p style="font-style: italic; opacity: 0.8;">This application does not generate or collect weather
+                        data; it only retrieves and broadcasts it.</p>
+                </div>
+                <div class="footer-disclaimer">
+                    <h4>Data & Technology Attributions</h4>
+                    <p><strong>Weather Data:</strong> Provided by <a href="https://open-meteo.com/"
+                            target="_blank">Open-Meteo.com</a> under CC-BY 4.0. The accuracy and availability of the
+                        data are the sole responsibility of Open-Meteo.</p>
+                    <p><strong>Space Weather Data:</strong> Provided by <a href="https://www.swpc.noaa.gov/"
+                            target="_blank">NOAA Space Weather Prediction Center (SWPC)</a>.</p>
+                    <p><strong>Map Data:</strong> &copy; <a href="https://www.openstreetmap.org/copyright"
+                            target="_blank">OpenStreetMap</a> contributors.</p>
+                    <p><strong>Speech Synthesis:</strong> Powered by Microsoft Edge-TTS technology for non-commercial,
+                        personal use. See the README for commercial usage limitations.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Custom JS -->
+    <script src="/static/script.js"></script>
+</body>
+
+</html>

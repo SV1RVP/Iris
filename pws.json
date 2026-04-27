@@ -1,0 +1,1104 @@
+{
+  "config": {
+    "weather_station": {
+      "meta": {
+        "id": "neos_kosmos",
+        "name": "Neos Kosmos Weather Station",
+        "timezone": "Europe/Athens",
+        "source_url": "https://penteli.meteo.gr/stations/neoskosmos/ZWNTANA.html"
+      },
+      "fields": {
+        "datetime": {
+          "date_var": "imerominia",
+          "time_var": "ora",
+          "format": "DD/MM/YY HH:mm",
+          "icon": "📅"
+        },
+        "temperature": {
+          "current": {
+            "var": "outsideTemp",
+            "unit_var": "tempUnit",
+            "unit_default": "°C",
+            "icon": "🌡"
+          },
+          "high": {
+            "var": "hiOutsideTemp",
+            "time_var": "hiOutsideTempAT",
+            "icon": "🔺"
+          },
+          "low": {
+            "var": "lowOutsideTemp",
+            "time_var": "lowOutsideTempAT",
+            "icon": "🔻"
+          }
+        },
+        "humidity": {
+          "current": {
+            "var": "outsideHumidity",
+            "unit_var": "humUnit",
+            "unit_default": "%",
+            "icon": "💧"
+          },
+          "high": {
+            "var": "hiHumidity",
+            "time_var": "hiHumidityAT",
+            "icon": "🔺"
+          },
+          "low": {
+            "var": "lowHumidity",
+            "time_var": "lowHumidityAT",
+            "icon": "🔻"
+          }
+        },
+        "dewpoint": {
+          "current": {
+            "var": "outsideDewPt",
+            "unit": "°C",
+            "icon": "❄️"
+          }
+        },
+        "wind": {
+          "speed": {
+            "current": {
+              "var": "windSpeed",
+              "unit_var": "windUnit",
+              "unit_default": "km/hr",
+              "icon": "🍃"
+            },
+            "avg10": {
+              "var": "wind10Avg",
+              "icon": "🌀"
+            },
+            "high": {
+              "var": "hiWindSpeed",
+              "time_var": "hiWindSpeedAT",
+              "icon": "💨"
+            }
+          },
+          "direction": {
+            "dir_var": "windDirection",
+            "deg_var": "moires",
+            "icon": "🧭"
+          },
+          "chill": {
+            "current": {
+              "var": "windChill",
+              "unit": "°C",
+              "icon": "🥶"
+            }
+          }
+        },
+        "heat_index": {
+          "current": {
+            "var": "outsideHeatIndex",
+            "unit": "°C",
+            "icon": "🥵"
+          }
+        },
+        "pressure": {
+          "current": {
+            "var": "barometer",
+            "unit_var": "barUnit",
+            "unit_default": "hPa",
+            "icon": "🧪"
+          },
+          "trend": {
+            "var": "BarTrend",
+            "icon": "📈"
+          }
+        },
+        "rain": {
+          "daily": {
+            "var": "dailyRain",
+            "unit_var": "rainUnit",
+            "unit_default": "mm",
+            "icon": "🌧"
+          },
+          "monthly": {
+            "var": "monthlyRain",
+            "icon": "🗓"
+          },
+          "total": {
+            "var": "totalRain",
+            "icon": "📊"
+          },
+          "rate": {
+            "var": "rainRate",
+            "unit_var": "rateUnit",
+            "unit_default": "mm/hr",
+            "icon": "💧"
+          }
+        },
+        "forecast": {
+          "var": "ForecastStr",
+          "icon": "🛰"
+        }
+      }
+    },
+    "external_sources": {
+      "air_quality": {
+        "meta": {
+          "id": "air_quality",
+          "name_el": "Ποιότητα Αέρα",
+          "name_en": "Air Quality",
+          "source": "PurpleAir/Aggregation",
+          "purpleair_sensors": [
+            {
+              "id": "198895",
+              "key": "W73MID5ASQ1REGSB",
+              "label": "Panacea Center"
+            },
+            {
+              "id": "134192",
+              "key": "TV485U4Z17AN16OK",
+              "label": "Sensor 2"
+            },
+            {
+              "id": "200899",
+              "key": "PCCDLKSX00QEHZ5I",
+              "label": "Sensor 3"
+            },
+            {
+              "id": "198879",
+              "key": "74R41JCVZ0V3IY24",
+              "label": "Sensor 4"
+            },
+            {
+              "id": "294073",
+              "key": "62J75WQOZIE7HJ04",
+              "label": "Sensor 5"
+            }
+          ],
+          "iqair_url": "https://www.iqair.com/greece/attica/athens/panacea_urban_releaf_16",
+          "iqair_fallback_url": "https://www.iqair.com/eu/greece/attica/athens/platia-agias-marinas"
+        },
+        "fields": {
+          "level": {
+            "var": "airq_level",
+            "icon": "🌫"
+          },
+          "level_description": {
+            "var": "airq_level_description"
+          },
+          "aqi_us": {
+            "var": "airq_aqi_us",
+            "icon": "🇺🇸"
+          },
+          "pm25": {
+            "var": "airq_pm25",
+            "unit": "µg/m³",
+            "icon": "🧪"
+          }
+        }
+      },
+      "solar_radiation": {
+        "meta": {
+          "id": "solar_radiation_ampelokipoi",
+          "name_el": "Ηλιακή ακτινοβολία",
+          "name_en": "Solar Radiation",
+          "source": "meteo.gr / Ampelokipoi",
+          "url": "https://penteli.meteo.gr/stations/ampelokipoi/"
+        },
+        "fields": {
+          "wm2": {
+            "var": "solar_wm2",
+            "unit": "W/m²",
+            "icon": "☀️"
+          },
+          "description": {
+            "var": "solar_description"
+          }
+        }
+      },
+      "uv_index": {
+        "meta": {
+          "id": "uv_index_ampelokipoi",
+          "name_el": "Δείκτης UV",
+          "name_en": "UV Index",
+          "source": "meteo.gr / Ampelokipoi",
+          "url": "https://penteli.meteo.gr/stations/ampelokipoi/"
+        },
+        "fields": {
+          "uv_index": {
+            "var": "uv_index",
+            "unit": "index",
+            "icon": "🕶"
+          },
+          "description": {
+            "var": "uv_description"
+          }
+        }
+      },
+      "radiation": {
+        "meta": {
+          "id": "radiation_gmcmap",
+          "name_el": "Ραδιενέργεια",
+          "name_en": "Radiation",
+          "source": "GMCMap",
+          "url": "https://www.gmcmap.com/historyData.asp?Param_ID=80961625484&systemTimeZone=3"
+        },
+        "fields": {
+          "usvh": {
+            "var": "rad_usvh",
+            "unit": "µSv/h",
+            "icon": "☢️"
+          },
+          "description": {
+            "var": "rad_description"
+          }
+        }
+      },
+      "noaa_space_weather": {
+        "meta": {
+          "id": "noaa_space_weather_scales",
+          "name_el": "Ηλιακή δραστηριότητα",
+          "name_en": "Solar / Space Weather",
+          "source": "NOAA SWPC",
+          "url": "https://www.swpc.noaa.gov/noaa-scales-explanation"
+        },
+        "fields": {
+          "geomagnetic_storms": {
+            "value_var": "noaa_geomagnetic_value",
+            "level_var": "noaa_geomagnetic_level",
+            "desc_var": "noaa_geomagnetic_description",
+            "icon": "🧲"
+          },
+          "solar_radiation_storms": {
+            "value_var": "noaa_solar_rad_value",
+            "level_var": "noaa_solar_rad_level",
+            "desc_var": "noaa_solar_rad_description",
+            "icon": "🌞"
+          },
+          "radio_blackouts": {
+            "value_var": "noaa_radio_blk_value",
+            "level_var": "noaa_radio_blk_level",
+            "desc_var": "noaa_radio_blk_description",
+            "icon": "📡"
+          }
+        }
+      },
+      "fire_risk": {
+        "meta": {
+          "id": "fire_risk_generic",
+          "name_el": "Κίνδυνος πυρκαγιάς",
+          "name_en": "Fire Risk",
+          "source": "dasoprostasia.gr",
+          "url": "https://www.dasoprostasia.gr/defcon-map"
+        },
+        "fields": {
+          "level": {
+            "var": "fire_risk_level",
+            "icon": "🔥"
+          },
+          "description": {
+            "var": "fire_risk_description"
+          }
+        }
+      }
+    },
+    "scales": {
+      "temperature_c": [
+        {
+          "min": -50,
+          "max": 0,
+          "label_el": "Πολύ κρύο",
+          "label_en": "Very cold",
+          "color": "#0050A0",
+          "icon": "❄️"
+        },
+        {
+          "min": 0,
+          "max": 10,
+          "label_el": "Κρύο",
+          "label_en": "Cold",
+          "color": "#3399FF",
+          "icon": "🥶"
+        },
+        {
+          "min": 10,
+          "max": 18,
+          "label_el": "Δροσερό",
+          "label_en": "Cool",
+          "color": "#33CC33",
+          "icon": "🌥"
+        },
+        {
+          "min": 18,
+          "max": 25,
+          "label_el": "Ήπιο",
+          "label_en": "Mild",
+          "color": "#FFCC00",
+          "icon": "🌤"
+        },
+        {
+          "min": 25,
+          "max": 35,
+          "label_el": "Ζέστη",
+          "label_en": "Warm",
+          "color": "#FF8800",
+          "icon": "🌡"
+        },
+        {
+          "min": 35,
+          "max": 50,
+          "label_el": "Καύσωνας / Συναγερμός",
+          "label_en": "Heatwave / Alert",
+          "color": "#CC0000",
+          "icon": "🥵"
+        }
+      ],
+      "humidity_rel": [
+        {
+          "min": 0,
+          "max": 30,
+          "label_el": "Πολύ ξηρό",
+          "label_en": "Very dry",
+          "color": "#0050A0",
+          "icon": "💨"
+        },
+        {
+          "min": 30,
+          "max": 40,
+          "label_el": "Ξηρό",
+          "label_en": "Dry",
+          "color": "#3399FF",
+          "icon": "💨"
+        },
+        {
+          "min": 40,
+          "max": 60,
+          "label_el": "Άνετο",
+          "label_en": "Comfort",
+          "color": "#33CC33",
+          "icon": "😊"
+        },
+        {
+          "min": 60,
+          "max": 70,
+          "label_el": "Μέτρια υγρασία",
+          "label_en": "Humid",
+          "color": "#FFCC00",
+          "icon": "💧"
+        },
+        {
+          "min": 70,
+          "max": 80,
+          "label_el": "Υψηλή υγρασία",
+          "label_en": "High humidity",
+          "color": "#FF8800",
+          "icon": "💧"
+        },
+        {
+          "min": 80,
+          "max": 100,
+          "label_el": "Πολύ υψηλή υγρασία",
+          "label_en": "Very high humidity",
+          "color": "#CC0000",
+          "icon": "💦"
+        }
+      ],
+      "wind_speed_kmh": [
+        {
+          "min": 0,
+          "max": 1,
+          "label_el": "Νηνεμία",
+          "label_en": "Calm",
+          "color": "#0050A0",
+          "icon": "⚓"
+        },
+        {
+          "min": 1,
+          "max": 11,
+          "label_el": "Ασθενής",
+          "label_en": "Light",
+          "color": "#3399FF",
+          "icon": "🍃"
+        },
+        {
+          "min": 11,
+          "max": 28,
+          "label_el": "Μέτριος",
+          "label_en": "Moderate",
+          "color": "#33CC33",
+          "icon": "🌬"
+        },
+        {
+          "min": 28,
+          "max": 49,
+          "label_el": "Ισχυρός",
+          "label_en": "Strong",
+          "color": "#FFCC00",
+          "icon": "💨"
+        },
+        {
+          "min": 49,
+          "max": 88,
+          "label_el": "Θυελλώδης",
+          "label_en": "Gale",
+          "color": "#FF8800",
+          "icon": "🌀"
+        },
+        {
+          "min": 88,
+          "max": 999,
+          "label_el": "Θύελλα / Τυφώνας",
+          "label_en": "Storm / Hurricane",
+          "color": "#CC0000",
+          "icon": "🌪"
+        }
+      ],
+      "rain_rate_mmh": [
+        {
+          "min": 0.0,
+          "max": 0.1,
+          "label_el": "Χωρίς βροχή",
+          "label_en": "No rain",
+          "color": "#0050A0",
+          "icon": "☁️"
+        },
+        {
+          "min": 0.1,
+          "max": 2.5,
+          "label_el": "Ασθενής βροχή",
+          "label_en": "Light rain",
+          "color": "#3399FF",
+          "icon": "🌦"
+        },
+        {
+          "min": 2.5,
+          "max": 7.6,
+          "label_el": "Μέτρια βροχή",
+          "label_en": "Moderate rain",
+          "color": "#33CC33",
+          "icon": "🌧"
+        },
+        {
+          "min": 7.6,
+          "max": 15,
+          "label_el": "Ισχυρή βροχή",
+          "label_en": "Heavy rain",
+          "color": "#FFCC00",
+          "icon": "🌧"
+        },
+        {
+          "min": 15,
+          "max": 50,
+          "label_el": "Πολύ ισχυρή βροχή",
+          "label_en": "Very heavy rain",
+          "color": "#FF8800",
+          "icon": "⛈"
+        },
+        {
+          "min": 50,
+          "max": 999,
+          "label_el": "Καταρρακτώδης",
+          "label_en": "Torrential",
+          "color": "#CC0000",
+          "icon": "⛈"
+        }
+      ],
+      "pressure_trend": [
+        {
+          "value": "Falling",
+          "label_el": "Πτώση",
+          "label_en": "Falling",
+          "color": "#CC0000",
+          "icon": "📉"
+        },
+        {
+          "value": "Falling Slowly",
+          "label_el": "Πτώση (αργή)",
+          "label_en": "Falling Slowly",
+          "color": "#FF8800",
+          "icon": "📉"
+        },
+        {
+          "value": "Steady",
+          "label_el": "Σταθερή",
+          "label_en": "Steady",
+          "color": "#33CC33",
+          "icon": "➖"
+        },
+        {
+          "value": "Rising",
+          "label_el": "Άνοδος",
+          "label_en": "Rising",
+          "color": "#FFCC00",
+          "icon": "📈"
+        },
+        {
+          "value": "Rising Slowly",
+          "label_el": "Άνοδος (αργή)",
+          "label_en": "Rising Slowly",
+          "color": "#FF8800",
+          "icon": "📈"
+        }
+      ],
+      "discomfort_index": {
+        "icon": "🥵"
+      },
+      "wind_chill_index": {
+        "icon": "🥶"
+      },
+      "air_quality_level": [
+        {
+          "min": 0,
+          "max": 0,
+          "label_el": "Καμία μέτρηση",
+          "label_en": "No data",
+          "color": "#555555",
+          "icon": "❔"
+        },
+        {
+          "min": 1,
+          "max": 1.1,
+          "label_el": "Πολύ καλή",
+          "label_en": "Very good",
+          "color": "#33CC33",
+          "icon": "🙂"
+        },
+        {
+          "min": 2,
+          "max": 2.1,
+          "label_el": "Καλή",
+          "label_en": "Good",
+          "color": "#66CCFF",
+          "icon": "😊"
+        },
+        {
+          "min": 3,
+          "max": 3.1,
+          "label_el": "Μέτρια",
+          "label_en": "Moderate",
+          "color": "#FFCC00",
+          "icon": "😐"
+        },
+        {
+          "min": 4,
+          "max": 4.1,
+          "label_el": "Κακή",
+          "label_en": "Poor",
+          "color": "#FF8800",
+          "icon": "😷"
+        },
+        {
+          "min": 5,
+          "max": 5.1,
+          "label_el": "Πολύ κακή",
+          "label_en": "Very poor",
+          "color": "#CC0000",
+          "icon": "🤢"
+        },
+        {
+          "min": 6,
+          "max": 6.1,
+          "label_el": "Επικίνδυνη",
+          "label_en": "Hazardous",
+          "color": "#800000",
+          "icon": "☠️"
+        }
+      ],
+      "solar_radiation_level": [
+        {
+          "min": 0,
+          "max": 0.1,
+          "label_el": "Καμία μέτρηση",
+          "label_en": "No data",
+          "color": "#555555",
+          "icon": "❔"
+        },
+        {
+          "min": 0.1,
+          "max": 100,
+          "label_el": "Χαμηλή",
+          "label_en": "Low",
+          "color": "#3399FF",
+          "icon": "🌤"
+        },
+        {
+          "min": 100,
+          "max": 300,
+          "label_el": "Μέτρια",
+          "label_en": "Moderate",
+          "color": "#33CC33",
+          "icon": "🌥"
+        },
+        {
+          "min": 300,
+          "max": 600,
+          "label_el": "Υψηλή",
+          "label_en": "High",
+          "color": "#FFCC00",
+          "icon": "☀️"
+        },
+        {
+          "min": 600,
+          "max": 800,
+          "label_el": "Πολύ υψηλή",
+          "label_en": "Very high",
+          "color": "#FF8800",
+          "icon": "🌞"
+        },
+        {
+          "min": 800,
+          "max": 1000,
+          "label_el": "Ακραία",
+          "label_en": "Extreme",
+          "color": "#CC0000",
+          "icon": "🔥"
+        },
+        {
+          "min": 1000,
+          "max": 5000,
+          "label_el": "Επικίνδυνη",
+          "label_en": "Hazardous",
+          "color": "#800000",
+          "icon": "☠️"
+        }
+      ],
+      "uv_index_level": [
+        {
+          "min": 0,
+          "max": 0.1,
+          "label_el": "Καμία μέτρηση",
+          "label_en": "No data",
+          "color": "#555555",
+          "icon": "❔"
+        },
+        {
+          "min": 0.1,
+          "max": 3.0,
+          "label_el": "Χαμηλή",
+          "label_en": "Low",
+          "color": "#33CC33",
+          "icon": "🕶"
+        },
+        {
+          "min": 3.0,
+          "max": 6.0,
+          "label_el": "Μέτρια",
+          "label_en": "Moderate",
+          "color": "#FFCC00",
+          "icon": "🌤"
+        },
+        {
+          "min": 6.0,
+          "max": 8.0,
+          "label_el": "Υψηλή",
+          "label_en": "High",
+          "color": "#FF8800",
+          "icon": "🌞"
+        },
+        {
+          "min": 8.0,
+          "max": 11.0,
+          "label_el": "Πολύ υψηλή",
+          "label_en": "Very high",
+          "color": "#CC0000",
+          "icon": "🔥"
+        },
+        {
+          "min": 11.0,
+          "max": 50.0,
+          "label_el": "Ακραία",
+          "label_en": "Extreme",
+          "color": "#800000",
+          "icon": "☠️"
+        }
+      ],
+      "radiation_level": [
+        {
+          "min": 0,
+          "max": 0.0001,
+          "label_el": "Καμία μέτρηση",
+          "label_en": "No data",
+          "color": "#555555",
+          "icon": "❔"
+        },
+        {
+          "min": 0.0001,
+          "max": 0.1,
+          "label_el": "Χαμηλή",
+          "label_en": "Low",
+          "color": "#33CC33",
+          "icon": "🙂"
+        },
+        {
+          "min": 0.1,
+          "max": 0.3,
+          "label_el": "Μέτρια",
+          "label_en": "Moderate",
+          "color": "#FFCC00",
+          "icon": "😐"
+        },
+        {
+          "min": 0.3,
+          "max": 0.5,
+          "label_el": "Υψηλή",
+          "label_en": "High",
+          "color": "#FF8800",
+          "icon": "😬"
+        },
+        {
+          "min": 0.5,
+          "max": 1.0,
+          "label_el": "Πολύ υψηλή",
+          "label_en": "Very high",
+          "color": "#CC0000",
+          "icon": "⚠️"
+        },
+        {
+          "min": 1.0,
+          "max": 2.5,
+          "label_el": "Ακραία",
+          "label_en": "Extreme",
+          "color": "#800000",
+          "icon": "☢️"
+        },
+        {
+          "min": 2.5,
+          "max": 9999,
+          "label_el": "Επικίνδυνη",
+          "label_en": "Hazardous",
+          "color": "#4B0000",
+          "icon": "☠️"
+        }
+      ],
+      "fire_risk_level": [
+        {
+          "min": 0,
+          "max": 0.1,
+          "label_el": "Καμία μέτρηση",
+          "label_en": "No data",
+          "color": "#555555",
+          "icon": "❔"
+        },
+        {
+          "min": 0.1,
+          "max": 2,
+          "label_el": "Χαμηλός",
+          "label_en": "Low",
+          "color": "#33CC33",
+          "icon": "🟢"
+        },
+        {
+          "min": 2,
+          "max": 3,
+          "label_el": "Μέτριος",
+          "label_en": "Moderate",
+          "color": "#FFCC00",
+          "icon": "🟡"
+        },
+        {
+          "min": 3,
+          "max": 4,
+          "label_el": "Υψηλός",
+          "label_en": "High",
+          "color": "#FF8800",
+          "icon": "🟠"
+        },
+        {
+          "min": 4,
+          "max": 5,
+          "label_el": "Πολύ υψηλός",
+          "label_en": "Very high",
+          "color": "#CC0000",
+          "icon": "🔴"
+        },
+        {
+          "min": 5,
+          "max": 6,
+          "label_el": "Καταστροφικός",
+          "label_en": "Catastrophic",
+          "color": "#800000",
+          "icon": "🔥"
+        }
+      ]
+    },
+    "processing": {
+      "pressure_trend_map": {
+        "Falling": "Πτώση",
+        "Falling Slowly": "Πτώση (αργή)",
+        "Rising": "Άνοδος",
+        "Rising Slowly": "Άνοδος (αργή)",
+        "Steady": "Σταθερή"
+      },
+      "wind_direction_map": {
+        "N": "Βόρειος",
+        "NNE": "Βόρειος Βορειοανατολικός",
+        "NE": "Βορειοανατολικός",
+        "ENE": "Ανατολικός Βορειοανατολικός",
+        "E": "Ανατολικός",
+        "ESE": "Ανατολικός Νοτιοανατολικός",
+        "SE": "Νοτιοανατολικός",
+        "SSE": "Νότιος Νοτιοανατολικός",
+        "S": "Νότιος",
+        "SSW": "Νότιος Νοτιοδυτικός",
+        "SW": "Νοτιοδυτικός",
+        "WSW": "Δυτικός Νοτιοδυτικός",
+        "W": "Δυτικός",
+        "WNW": "Δυτικός Βορειοδυτικός",
+        "NW": "Βορειοδυτικός",
+        "NNW": "Βόρειος Βορειοδυτικός"
+      },
+      "air_quality_pm25_eu_thresholds": [
+        {
+          "max": 0,
+          "level": 0,
+          "description": "Καμία μέτρηση"
+        },
+        {
+          "max": 10,
+          "level": 1,
+          "description": "Πολύ Καλή"
+        },
+        {
+          "max": 20,
+          "level": 2,
+          "description": "Καλή"
+        },
+        {
+          "max": 25,
+          "level": 3,
+          "description": "Μέτρια"
+        },
+        {
+          "max": 50,
+          "level": 4,
+          "description": "Κακή"
+        },
+        {
+          "max": 75,
+          "level": 5,
+          "description": "Πολύ Κακή"
+        },
+        {
+          "max": 999,
+          "level": 6,
+          "description": "Επικίνδυνη"
+        }
+      ],
+      "solar_description_thresholds": [
+        {
+          "max": 0,
+          "description": "Καμία μέτρηση"
+        },
+        {
+          "max": 100,
+          "description": "Χαμηλή"
+        },
+        {
+          "max": 300,
+          "description": "Μέτρια"
+        },
+        {
+          "max": 600,
+          "description": "Υψηλή"
+        },
+        {
+          "max": 800,
+          "description": "Πολύ Υψηλή"
+        },
+        {
+          "max": 1000,
+          "description": "Ακραία"
+        },
+        {
+          "max": 9999,
+          "description": "Επικίνδυνη"
+        }
+      ],
+      "uv_description_thresholds": [
+        {
+          "max": 0,
+          "description": "Καμία μέτρηση"
+        },
+        {
+          "max": 2.99,
+          "description": "Χαμηλή"
+        },
+        {
+          "max": 5.99,
+          "description": "Μέτρια"
+        },
+        {
+          "max": 7.99,
+          "description": "Υψηλή"
+        },
+        {
+          "max": 10.99,
+          "description": "Πολύ Υψηλή"
+        },
+        {
+          "max": 20,
+          "description": "Ακραία"
+        },
+        {
+          "max": 999,
+          "description": "Επικίνδυνη"
+        }
+      ],
+      "radiation_description_thresholds": [
+        {
+          "max": 0,
+          "description": "Καμία μέτρηση"
+        },
+        {
+          "max": 0.1,
+          "description": "Χαμηλή"
+        },
+        {
+          "max": 0.3,
+          "description": "Μέτρια"
+        },
+        {
+          "max": 0.5,
+          "description": "Υψηλή"
+        },
+        {
+          "max": 1.0,
+          "description": "Πολύ Υψηλή"
+        },
+        {
+          "max": 2.5,
+          "description": "Ακραία"
+        },
+        {
+          "max": 9999,
+          "description": "Επικίνδυνη"
+        }
+      ],
+      "noaa_level_descriptions": {
+        "0": "Καμία μέτρηση",
+        "1": "Χαμηλή",
+        "2": "Μέτρια",
+        "3": "Υψηλή",
+        "4": "Πολύ Υψηλή",
+        "5": "Ακραία"
+      },
+      "fire_risk_level_descriptions": {
+        "0": "Καμία μέτρηση",
+        "1": "Χαμηλός",
+        "2": "Μέτριος",
+        "3": "Υψηλός",
+        "4": "Πολύ υψηλός",
+        "5": "Καταστροφικός"
+      }
+    }
+  },
+  "data": {
+    "imerominia": "18/04/26",
+    "imerominiaPC": "18/04/26",
+    "ora": "13:47",
+    "oraPC": "13:38",
+    "sunriseTime": " 6:46",
+    "sunsetTime": "20:04",
+    "ForecastStr": " Increasing clouds with little temperature change. ",
+    "tempUnit": "°C",
+    "outsideTemp": 21.7,
+    "hiOutsideTemp": 21.8,
+    "hiOutsideTempAT": "13:40",
+    "lowOutsideTemp": 16.4,
+    "lowOutsideTempAT": " 5:15",
+    "hiMonthlyOutsideTemp": 24.9,
+    "lowMonthlyOutsideTemp": 11.4,
+    "hiYearlyOutsideTemp": 24.9,
+    "lowYearlyOutsideTemp": 4.1,
+    "humUnit": "% ",
+    "outsideHumidity": 35.0,
+    "hiHumidity": 46.0,
+    "hiHumidityAT": " 4:54",
+    "lowHumidity": 35.0,
+    "lowHumidityAT": "13:12",
+    "hiMonthlyHumidity": 94.0,
+    "lowMonthlyHumidity": 33.0,
+    "hiYearlyHumidity": 95.0,
+    "lowYearlyHumidity": 28.0,
+    "outsideDewPt": 5.6,
+    "hiDewpoint": 6.7,
+    "hiDewpointAT": "10:40",
+    "lowDewpoint": 2.8,
+    "lowDewpointAT": " 0:00",
+    "hiMonthlyDewpoint": 14.4,
+    "lowMonthlyDewpoint": 1.7,
+    "hiYearlyDewpoint": 15.6,
+    "lowYearlyDewpoint": -8.9,
+    "windUnit": "km/hr",
+    "windSpeed": 14.5,
+    "wind10Avg": 16.1,
+    "hiWindSpeed": 43.5,
+    "hiWindSpeedAT": " 9:59",
+    "hiMonthlyWindSpeed": 54.7,
+    "hiYearlyWindSpeed": 57.9,
+    "windDirection": "NNE",
+    "moires": "17°",
+    "windChill": 20.6,
+    "lowWindchill": 15.6,
+    "lowWindchillAT": " 6:13",
+    "lowMonthlyWindchill": 10.0,
+    "lowYearlyWindchill": 0.0,
+    "outsideHeatIndex": 20.3,
+    "hiHeatindex": "20.0",
+    "hiHeatindexAT": "12:50",
+    "hiMonthlyHeatindex": "24.4",
+    "hiYearlyHeatindex": "24.4",
+    "barUnit": "hPa",
+    "barometer": 1009.9,
+    "BarTrend": "Rising Slowly",
+    "hiBarometer": 1010.0,
+    "hiBarometerAT": "12:35",
+    "lowBarometer": 1006.3,
+    "lowBarometerAT": " 5:05",
+    "lowMonthlyBarometer": 989.5,
+    "hiMonthlyBarometer": 1022.3,
+    "lowYearlyBarometer": 986.7,
+    "hiYearlyBarometer": 1030.7,
+    "rainUnit": "mm",
+    "dailyRain": 0.0,
+    "stormRain": "0.0",
+    "monthlyRain": 38.8,
+    "totalRain": 236.0,
+    "rateUnit": "mm/hr",
+    "rainRate": 0.0,
+    "hiRainRate": 0.0,
+    "hiRainRateAT": "----",
+    "hiMonthlyRainRate": 37.6,
+    "hiYearlyRainRate": 192.0,
+    "solarUnit": "W/m²",
+    "solarRad": "---",
+    "hiSolarRad": "---",
+    "hiSolarRadAT": "---",
+    "hiMonthlySolarRad": "---",
+    "hiYearlySolarRad": "---",
+    "uvUnit": "index",
+    "uv": "---",
+    "hiUV": "---",
+    "hiUVAT": "---",
+    "hiMonthlyUV": "---",
+    "hiYearlyUV": "---",
+    "moires_deg": 17.0,
+    "BarTrend_el": "Άνοδος (αργή)",
+    "windDirection_el": "Βόρειος Βορειοανατολικός",
+    "uv_index": 4.7,
+    "uv_description": "Μέτρια",
+    "fire_risk_level": 0,
+    "fire_risk_description": "Καμία μέτρηση",
+    "rad_usvh": 0.0,
+    "rad_description": "Καμία μέτρηση",
+    "airq_level": 1,
+    "airq_level_description": "Πολύ Καλή",
+    "airq_aqi_us": 15,
+    "airq_pm25": 6.2,
+    "solar_wm2": 876.0,
+    "solar_description": "Ακραία",
+    "noaa_geomagnetic_value": "G",
+    "noaa_geomagnetic_level": 0,
+    "noaa_geomagnetic_description": "Καμία μέτρηση",
+    "noaa_solar_rad_value": "S",
+    "noaa_solar_rad_level": 0,
+    "noaa_solar_rad_description": "Καμία μέτρηση",
+    "noaa_radio_blk_value": "R",
+    "noaa_radio_blk_level": 0,
+    "noaa_radio_blk_description": "Καμία μέτρηση"
+  }
+}

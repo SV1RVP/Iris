@@ -1,0 +1,15 @@
+{
+  "outTemp": "15.0",
+  "outHumidity": "50",
+  "barometer": "1013.2",
+  "windSpeed": "10.0",
+  "windDir": "180",
+  "windGust": "15.0",
+  "dayRain": "0.0",
+  "rainRate": "0.0",
+  "UV": "0",
+  "radiation": "0",
+  "dewpoint": "5.0",
+  "windchill": "13.0",
+  "heatindex": "15.0"
+}

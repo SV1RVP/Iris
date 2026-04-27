@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+
+# App Specific
+settings.json
+app.log
+test_output.txt
+test_units.txt
+test_speech.txt
+
+# OS
+.DS_Store
+Thumbs.db

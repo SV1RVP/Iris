@@ -1,0 +1,15 @@
+{
+  "temp": "15.0",
+  "hum": "50",
+  "dew": "5.0",
+  "wspeed": "10.0",
+  "wdir": "180",
+  "press": "1013.2",
+  "rfall": "0.0",
+  "rrate": "0.0",
+  "apptemp": "14.0",
+  "windchill": "13.0",
+  "heatindex": "15.0",
+  "SolarRad": "0",
+  "UV": "0"
+}
