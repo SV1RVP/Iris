@@ -10,6 +10,11 @@ An advanced, open-source automated radio weather broadcast system designed for A
 
 ---
 
+![Iris Meteo Beacon WebUI](images/Iris%20Meteo%20Beacon%20WebUI.png)
+
+---
+
+
 ## 🌟 Key Features
 
 - **Dynamic Audio Sequencer:** Transform your beacon into a fully customizable broadcast. Use numeric ordering (1, 2, 3...) to define exactly which parameters are announced and in what order.
@@ -104,6 +109,8 @@ The Iris Meteo Beacon includes automated uninstaller scripts for a clean removal
    ```
 2. Confirm with `y`.
 *This will stop and remove the systemd service and delete the project folder.*
+
+![Raspberry Pi Deployment](images/raspberrypi.jpg)
 
 ---
 
