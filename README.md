@@ -114,7 +114,17 @@ The Iris Meteo Beacon includes automated uninstaller scripts for a clean removal
 
 ---
 
+---
+
+## 📫 Contact
+
+- **Email:** [sv1rvp@rfnews.gr](mailto:sv1rvp@rfnews.gr)
+- **Element (Matrix):** [#iris-meteo-beacon:matrix.org](https://matrix.to/#/%23iris-meteo-beacon:matrix.org)
+
+---
+
 ## 🤝 Contributing
+
 
 We welcome contributions from the amateur radio community and developers! 
 - **Bug Reports:** Open an issue on GitLab.
