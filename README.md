@@ -21,7 +21,7 @@ An advanced, open-source automated radio weather broadcast system designed for A
 - **Dual-Period Announcement System:** The beacon automatically manages two distinct broadcast periods:
     1. **Current Conditions:** Detailed report from local or global data sources.
     2. **Weather Forecast:** A professional-grade daily forecast (Today or Tomorrow) with independent parameters.
-- **Bilingual Speech Engine:** OS-aware and language-intelligent. The system automatically speaks the language matching your selected TTS voice (Greek or English) with optimized acoustics for more natural-sounding announcements.
+- **Multilingual Speech Engine:** OS-aware and language-intelligent. The system supports multiple high-quality neural voices including **Greek, English (US/UK), French, Italian, and German**, with optimized acoustics for natural-sounding announcements.
 - **Professional Linguistic Logic:** Instead of robotic sentences, the system uses an advanced text formatter that produces natural, professional weather reports. The Greek implementation has been specifically tuned for acoustic clarity and flow.
 - **Multi-Software PWS Support:** Dynamic integration with major weather software including **Cumulus MX, Meteobridge, Weather Display, WeeWX, APRS,** and **Weather Link**. Supports flexible data parsing from both JSON and text-based templates.
 - **Autonomous Forecast Module:** Fully decoupled from station data. It features independent model selection (ECMWF, GFS, ICON, etc.) and specific parameters like **UV Index, Wind Direction, Sunrise/Sunset, and Total Precipitation**.
