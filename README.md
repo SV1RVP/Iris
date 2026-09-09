@@ -51,7 +51,7 @@ An advanced, open-source automated radio weather broadcast system designed for A
 3. **Audio Engine (`core/audio_engine.py`)**: Streams TTS data from the cloud into a memory buffer and plays it via the system's audio output.
 4. **PTT Controller (`core/ptt_controller.py`)**: Manages the hardware interface to the radio transmitter. Supports automatic port detection and four hardware trigger modes (RTS/DTR High/Low) for universal compatibility.
 5. **Scheduler (`core/scheduler.py`)**: Manages the timing of broadcasts, alternating between Current Conditions and Forecasts.
-6. **Updater (`core/updater.py`)**: A hybrid module that checks for new versions on GitLab and handles the update process (Git pull or ZIP override) across different operating systems.
+6. **Updater (`core/updater.py`)**: A hybrid module that checks for new versions on GitHub and handles the update process (Git pull or ZIP override) across different operating systems.
 
 ---
 
@@ -81,7 +81,7 @@ The Iris Meteo Beacon supports a wide variety of Linux distributions, including 
 
 1. **Clone & Access Folder:**
    ```bash
-   git clone https://gitlab.com/SV1RVP/iris-meteo-beacon.git Iris-Meteo-Beacon
+   git clone https://github.com/SV1RVP/Iris.git Iris-Meteo-Beacon
    cd Iris-Meteo-Beacon
    ```
 2. **Quick Install:** Run the universal installer:
@@ -127,9 +127,9 @@ The Iris Meteo Beacon includes automated uninstaller scripts for a clean removal
 
 
 We welcome contributions from the amateur radio community and developers! 
-- **Bug Reports:** Open an issue on GitLab.
+- **Bug Reports:** Open an issue on GitHub.
 - **Feature Requests:** Share your ideas for new sensors or data models.
-- **Development:** Feel free to fork the project and submit Merge Requests.
+- **Development:** Feel free to fork the project and submit Pull Requests.
 
 ---
 

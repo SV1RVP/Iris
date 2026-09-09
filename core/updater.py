@@ -10,8 +10,8 @@ import shutil
 import time
 
 VERSION_FILE = 'version.json'
-GITLAB_VERSION_URL = 'https://gitlab.com/SV1RVP/iris-meteo-beacon/-/raw/master/version.json'
-GITLAB_ZIP_URL = 'https://gitlab.com/SV1RVP/iris-meteo-beacon/-/archive/master/iris-meteo-beacon-master.zip'
+GITHUB_VERSION_URL = 'https://raw.githubusercontent.com/SV1RVP/Iris/main/version.json'
+GITHUB_ZIP_URL = 'https://github.com/SV1RVP/Iris/archive/refs/heads/main.zip'
 
 def get_local_version():
     """Reads the current version from version.json."""
@@ -24,9 +24,9 @@ def get_local_version():
     return {"version": "0.0.0", "commit": "unknown"}
 
 def get_remote_version():
-    """Fetches the latest version from GitLab."""
+    """Fetches the latest version from GitHub."""
     try:
-        response = requests.get(GITLAB_VERSION_URL, timeout=10)
+        response = requests.get(GITHUB_VERSION_URL, timeout=10)
         if response.status_code == 200:
             return response.json()
     except Exception as e:
@@ -50,9 +50,14 @@ def check_for_updates():
         try:
             subprocess.run(["git", "fetch"], capture_output=True)
             result = subprocess.run(
-                ["git", "rev-list", "--count", "HEAD..origin/master"],
+                ["git", "rev-list", "--count", "HEAD..@{u}"],
                 capture_output=True, text=True
             )
+            if result.returncode != 0:
+                result = subprocess.run(
+                    ["git", "rev-list", "--count", "HEAD..origin/main"],
+                    capture_output=True, text=True
+                )
             count = int(result.stdout.strip())
             update_available = count > 0
         except:
@@ -114,9 +119,9 @@ def run_update():
         flush_logs()
         try:
             # 1. Download ZIP
-            logging.info(f"Connecting to GitLab: {GITLAB_ZIP_URL} ...")
+            logging.info(f"Connecting to GitHub: {GITHUB_ZIP_URL} ...")
             flush_logs()
-            resp = requests.get(GITLAB_ZIP_URL, stream=True, timeout=30)
+            resp = requests.get(GITHUB_ZIP_URL, stream=True, timeout=30)
             resp.raise_for_status() 
             
             zip_path = "update.zip"
