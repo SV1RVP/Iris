@@ -109,7 +109,7 @@ fi
 
 echo ""
 echo "============================================================"
-echo "   Installation Complete! v1.0.0"
+echo "   Installation Complete! v1.1.2"
 echo "============================================================"
 echo "The Iris Meteo Beacon is now running in the background."
 echo "View logs: sudo journalctl -u iris-meteo -f"

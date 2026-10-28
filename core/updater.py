@@ -33,6 +33,30 @@ def get_remote_version():
         logging.error(f"Error fetching remote version: {e}")
     return None
 
+def migrate_git_remote_if_needed():
+    """Migrates git remote origin from GitLab to GitHub and switches tracking to origin/main."""
+    if not os.path.exists('.git'):
+        return
+    try:
+        res = subprocess.run(["git", "remote", "get-url", "origin"], capture_output=True, text=True, timeout=5)
+        url = res.stdout.strip()
+        if "gitlab.com" in url:
+            logging.info("Migrating git remote origin from GitLab to GitHub (SV1RVP/Iris)...")
+            subprocess.run(["git", "remote", "set-url", "origin", "https://github.com/SV1RVP/Iris.git"], capture_output=True, timeout=5)
+            subprocess.run(["git", "fetch", "origin"], capture_output=True, timeout=15)
+            
+            # Switch branch from master to main if applicable
+            branch_res = subprocess.run(["git", "branch", "--show-current"], capture_output=True, text=True, timeout=5)
+            current_branch = branch_res.stdout.strip()
+            if current_branch == "master":
+                subprocess.run(["git", "branch", "-m", "master", "main"], capture_output=True, timeout=5)
+                subprocess.run(["git", "branch", "-u", "origin/main", "main"], capture_output=True, timeout=5)
+            elif current_branch == "main":
+                subprocess.run(["git", "branch", "-u", "origin/main", "main"], capture_output=True, timeout=5)
+            logging.info("Git remote migration to GitHub completed successfully.")
+    except Exception as e:
+        logging.error(f"Error migrating git remote to GitHub: {e}")
+
 def check_for_updates():
     """Compares local version with remote version."""
     local = get_local_version()
@@ -43,34 +67,28 @@ def check_for_updates():
     
     # Check if we are in a Git repo
     is_git = os.path.exists('.git')
+    update_available = (remote.get('version') != local.get('version'))
     
-    update_available = False
     if is_git:
-        # For git, we use the commit hash if available, or just check git directly
+        migrate_git_remote_if_needed()
         try:
-            subprocess.run(["git", "fetch"], capture_output=True)
+            subprocess.run(["git", "fetch", "origin"], capture_output=True, timeout=15)
             result = subprocess.run(
-                ["git", "rev-list", "--count", "HEAD..@{u}"],
-                capture_output=True, text=True
+                ["git", "rev-list", "--count", "HEAD..origin/main"],
+                capture_output=True, text=True, timeout=5
             )
-            if result.returncode != 0:
-                result = subprocess.run(
-                    ["git", "rev-list", "--count", "HEAD..origin/main"],
-                    capture_output=True, text=True
-                )
-            count = int(result.stdout.strip())
-            update_available = count > 0
-        except:
-            # Fallback to version comparison if git fails
-            update_available = remote['version'] != local['version']
-    else:
-        update_available = remote['version'] != local['version']
+            if result.returncode == 0:
+                count = int(result.stdout.strip())
+                if count > 0:
+                    update_available = True
+        except Exception as e:
+            logging.warning(f"Git update check failed, using version comparison: {e}")
         
     return {
         "status": "success",
         "update_available": update_available,
-        "local_version": local['version'],
-        "remote_version": remote['version'],
+        "local_version": local.get('version', '0.0.0'),
+        "remote_version": remote.get('version', '0.0.0'),
         "is_git": is_git
     }
 
@@ -97,6 +115,7 @@ def run_update():
         logging.info("Starting Git update (pulling latest commits)...")
         flush_logs()
         try:
+            migrate_git_remote_if_needed()
             # Simple git pull
             subprocess.run(["git", "pull"], check=True)
             
