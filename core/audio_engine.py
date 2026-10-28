@@ -25,6 +25,16 @@ def init_audio(device_name=None):
 
 _edge_tts_checked = False
 
+def reload_edge_tts():
+    """Unloads and reloads edge_tts from disk into sys.modules."""
+    import sys
+    for mod in list(sys.modules.keys()):
+        if mod == 'edge_tts' or mod.startswith('edge_tts.'):
+            del sys.modules[mod]
+    global edge_tts
+    import edge_tts
+    return edge_tts
+
 def ensure_edge_tts_compat():
     """Checks if edge-tts is using outdated Sec-MS-GEC v1 tokens and updates if necessary."""
     global _edge_tts_checked
@@ -38,7 +48,11 @@ def ensure_edge_tts_compat():
             logging.warning(f"Detected deprecated edge-tts (Sec-MS-GEC version {sec_ver}). Updating edge-tts to >=7.3.1...")
             import subprocess, sys
             subprocess.run([sys.executable, "-m", "pip", "install", "--upgrade", "edge-tts>=7.3.1"], capture_output=True, timeout=60)
-            logging.info("edge-tts update attempted.")
+            logging.info("edge-tts update installed. Reloading module in memory...")
+            reload_edge_tts()
+            import edge_tts.constants
+            new_ver = getattr(edge_tts.constants, 'SEC_MS_GEC_VERSION', 'unknown')
+            logging.info(f"edge-tts reloaded successfully (Sec-MS-GEC version: {new_ver}).")
     except Exception as e:
         logging.debug(f"edge-tts compatibility check skipped: {e}")
 
@@ -78,24 +92,34 @@ def generate_and_play(text, settings, ptt_callback=None):
     
     logging.info(f"Generating audio in memory (Voice: {voice}, Rate: {rate})")
     
+    buffer = None
     try:
         buffer = asyncio.run(_generate_audio_buffer(text, voice, rate))
     except Exception as e:
         err_str = str(e)
         if "403" in err_str or "Invalid response status" in err_str:
             logging.error(f"Failed to generate TTS audio: {e}")
-            logging.error("Microsoft Edge TTS rejected the request (403 Forbidden). Updating edge-tts to latest version...")
+            logging.error("Microsoft Edge TTS rejected the request (403 Forbidden). Updating and reloading edge-tts in memory...")
             try:
                 import subprocess, sys
-                res = subprocess.run([sys.executable, "-m", "pip", "install", "--upgrade", "edge-tts>=7.3.1"], capture_output=True, text=True, timeout=60)
-                if res.returncode == 0:
-                    logging.info("edge-tts successfully updated to >=7.3.1! Please restart the beacon service.")
-                else:
-                    logging.error(f"Automatic edge-tts upgrade failed: {res.stderr}")
+                subprocess.run([sys.executable, "-m", "pip", "install", "--upgrade", "edge-tts>=7.3.1"], capture_output=True, timeout=60)
+                logging.info("Reloading edge-tts module into memory...")
+                reload_edge_tts()
+                try:
+                    logging.info("Retrying audio generation with reloaded edge-tts...")
+                    buffer = asyncio.run(_generate_audio_buffer(text, voice, rate))
+                except Exception as retry_err:
+                    logging.error(f"Retry after reload failed: {retry_err}. Please restart the beacon.")
+                    return False
             except Exception as up_err:
                 logging.error(f"Could not auto-upgrade edge-tts: {up_err}. Please run: pip install --upgrade edge-tts>=7.3.1")
+                return False
         else:
             logging.error(f"Failed to generate TTS audio: {e}")
+            return False
+
+    if not buffer:
+        logging.error("Failed to generate audio buffer.")
         return False
         
     init_audio(audio_device)
