@@ -23,23 +23,54 @@ def init_audio(device_name=None):
     except Exception as e:
         logging.error(f"Failed to init audio engine: {e}")
 
+_edge_tts_checked = False
+
+def ensure_edge_tts_compat():
+    """Checks if edge-tts is using outdated Sec-MS-GEC v1 tokens and updates if necessary."""
+    global _edge_tts_checked
+    if _edge_tts_checked:
+        return
+    _edge_tts_checked = True
+    try:
+        import edge_tts.constants
+        sec_ver = getattr(edge_tts.constants, 'SEC_MS_GEC_VERSION', '')
+        if sec_ver.startswith('1-'):
+            logging.warning(f"Detected deprecated edge-tts (Sec-MS-GEC version {sec_ver}). Updating edge-tts to >=7.3.1...")
+            import subprocess, sys
+            subprocess.run([sys.executable, "-m", "pip", "install", "--upgrade", "edge-tts>=7.3.1"], capture_output=True, timeout=60)
+            logging.info("edge-tts update attempted.")
+    except Exception as e:
+        logging.debug(f"edge-tts compatibility check skipped: {e}")
+
 async def _generate_audio_buffer(text, voice, rate):
     """
-    Internal async function to generate audio.
+    Internal async function to generate audio with retries.
     Rate can be e.g. '+0%' or '+10%'.
     """
-    communicate = edge_tts.Communicate(text, voice, rate=rate)
-    audio_data = bytearray()
-    async for chunk in communicate.stream():
-        if chunk["type"] == "audio":
-            audio_data.extend(chunk["data"])
-    return io.BytesIO(audio_data)
+    last_error = None
+    for attempt in range(2):
+        try:
+            communicate = edge_tts.Communicate(text, voice, rate=rate)
+            audio_data = bytearray()
+            async for chunk in communicate.stream():
+                if chunk["type"] == "audio":
+                    audio_data.extend(chunk["data"])
+            if audio_data:
+                return io.BytesIO(audio_data)
+        except Exception as e:
+            last_error = e
+            logging.warning(f"TTS attempt {attempt + 1} failed: {e}")
+            if attempt == 0:
+                await asyncio.sleep(1)
+                
+    raise last_error or Exception("No audio data generated")
 
 def generate_and_play(text, settings, ptt_callback=None):
     """
     Generates TTS in-memory and plays it.
     ptt_callback is a function that takes a boolean (True to open, False to close PTT).
     """
+    ensure_edge_tts_compat()
     voice = settings.get('tts_voice', 'en-US-AriaNeural')
     rate = f"{settings.get('tts_rate', 0):+d}%" # format as +10% or -10%
     volume = settings.get('audio_volume', 1.0)
@@ -50,7 +81,21 @@ def generate_and_play(text, settings, ptt_callback=None):
     try:
         buffer = asyncio.run(_generate_audio_buffer(text, voice, rate))
     except Exception as e:
-        logging.error(f"Failed to generate TTS audio: {e}")
+        err_str = str(e)
+        if "403" in err_str or "Invalid response status" in err_str:
+            logging.error(f"Failed to generate TTS audio: {e}")
+            logging.error("Microsoft Edge TTS rejected the request (403 Forbidden). Updating edge-tts to latest version...")
+            try:
+                import subprocess, sys
+                res = subprocess.run([sys.executable, "-m", "pip", "install", "--upgrade", "edge-tts>=7.3.1"], capture_output=True, text=True, timeout=60)
+                if res.returncode == 0:
+                    logging.info("edge-tts successfully updated to >=7.3.1! Please restart the beacon service.")
+                else:
+                    logging.error(f"Automatic edge-tts upgrade failed: {res.stderr}")
+            except Exception as up_err:
+                logging.error(f"Could not auto-upgrade edge-tts: {up_err}. Please run: pip install --upgrade edge-tts>=7.3.1")
+        else:
+            logging.error(f"Failed to generate TTS audio: {e}")
         return False
         
     init_audio(audio_device)

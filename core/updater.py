@@ -129,6 +129,13 @@ def run_update():
             # Simple git pull
             subprocess.run(["git", "pull"], check=True)
             
+            # Upgrade dependencies if needed (e.g. edge-tts)
+            try:
+                logging.info("Updating Python dependencies from requirements.txt...")
+                subprocess.run([sys.executable, "-m", "pip", "install", "--upgrade", "-r", "requirements.txt"], capture_output=True, timeout=120)
+            except Exception as pip_err:
+                logging.warning(f"Failed to update dependencies: {pip_err}")
+            
             if system == "Linux":
                 # Systemd service has Restart=always, so just exit
                 logging.info("Update complete. Exiting process. Systemd will restart the service automatically...")
@@ -171,7 +178,11 @@ def run_update():
                 time.sleep(1)
                 os._exit(0) 
             else:
-                # Linux ZIP (unlikely but possible)
+                # Linux ZIP
+                try:
+                    subprocess.run([sys.executable, "-m", "pip", "install", "--upgrade", "-r", "requirements.txt"], capture_output=True, timeout=120)
+                except:
+                    pass
                 logging.info("Update complete. Exiting process. Systemd will restart the service automatically...")
                 flush_logs()
                 time.sleep(1)
@@ -210,6 +221,13 @@ if defined EXT_DIR (
     echo Error: Could not find extracted folder.
     pause
     exit
+)
+
+echo Updating dependencies...
+if exist ".venv\\Scripts\\python.exe" (
+    .venv\\Scripts\\python.exe -m pip install --upgrade -r requirements.txt
+) else (
+    python -m pip install --upgrade -r requirements.txt
 )
 
 echo Update Complete!

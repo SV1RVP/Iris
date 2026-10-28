@@ -28,7 +28,7 @@ if %errorlevel% neq 0 (
 :: Install Dependencies
 echo [2/3] Installing dependencies from requirements.txt...
 .venv\Scripts\python -m pip install --upgrade pip
-.venv\Scripts\pip install -r requirements.txt
+.venv\Scripts\pip install --upgrade -r requirements.txt
 if %errorlevel% neq 0 (
     echo [ERROR] Failed to install dependencies.
     pause

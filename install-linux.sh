@@ -59,7 +59,7 @@ source .venv/bin/activate
 # Install Python requirements
 echo "Installing Python dependencies..."
 pip install --upgrade pip
-pip install -r requirements.txt
+pip install --upgrade -r requirements.txt
 
 # Create systemd service
 SERVICE_FILE="/etc/systemd/system/iris-meteo.service"
@@ -109,7 +109,7 @@ fi
 
 echo ""
 echo "============================================================"
-echo "   Installation Complete! v1.1.2"
+echo "   Installation Complete! v1.1.3"
 echo "============================================================"
 echo "The Iris Meteo Beacon is now running in the background."
 echo "View logs: sudo journalctl -u iris-meteo -f"

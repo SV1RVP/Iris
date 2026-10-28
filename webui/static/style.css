@@ -378,6 +378,14 @@ input[type=range]::-webkit-slider-runnable-track {
     z-index: 1;
 }
 
+.leaflet-container {
+    background: #0b1120 !important;
+}
+
+.map-tiles {
+    filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7);
+}
+
 .coord-inputs {
     display: flex;
     gap: 15px;
