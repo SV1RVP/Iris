@@ -57,6 +57,15 @@ def migrate_git_remote_if_needed():
     except Exception as e:
         logging.error(f"Error migrating git remote to GitHub: {e}")
 
+def parse_version(v_str):
+    """Parses a version string like '1.1.2' into a comparable tuple (1, 1, 2)."""
+    try:
+        clean = str(v_str).strip().lstrip('v')
+        parts = [int(p) for p in clean.split('.') if p.isdigit()]
+        return tuple(parts) if parts else (0, 0, 0)
+    except:
+        return (0, 0, 0)
+
 def check_for_updates():
     """Compares local version with remote version."""
     local = get_local_version()
@@ -67,7 +76,9 @@ def check_for_updates():
     
     # Check if we are in a Git repo
     is_git = os.path.exists('.git')
-    update_available = (remote.get('version') != local.get('version'))
+    local_v = parse_version(local.get('version', '0.0.0'))
+    remote_v = parse_version(remote.get('version', '0.0.0'))
+    update_available = remote_v > local_v
     
     if is_git:
         migrate_git_remote_if_needed()
@@ -79,8 +90,7 @@ def check_for_updates():
             )
             if result.returncode == 0:
                 count = int(result.stdout.strip())
-                if count > 0:
-                    update_available = True
+                update_available = (count > 0) or (remote_v > local_v)
         except Exception as e:
             logging.warning(f"Git update check failed, using version comparison: {e}")
         
